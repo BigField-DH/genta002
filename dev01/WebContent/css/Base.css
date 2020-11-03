@@ -1,0 +1,101 @@
+@charset "utf-8";
+hr { border:none; border-top:solid 1px #A0A0A0; }
+input[type="text"] { border:solid 1px; padding: 1px 3px; }
+table { border-collapse:collapse; border:solid 0px; padding:0px; }
+td { border:solid 0px; padding:0px; }
+th { border:solid 1px #A0A0A0; padding:0px 5px; }
+A       { color:#0000F0; border:solid 1px #0000F0; background:#FFFFC0; padding:0px 5px; text-decoration:none; }
+A:hover { color:#C00000; border:solid 1px #C00000; font-style:italic; }
+
+/* ◆ Common ◆ */
+.baseStyle { margin:5px; color:#600000; background:#FFFBF0; width:960px; display:none; }
+.none, #hr { display:none; }
+
+/* ◆ Header ◆ */
+#header {
+	border:solid 2px #0000E0; border-left:none; border-right:none; background:#FFFFC0; height:55px; width:100%; display:table; }
+#header #hdrTtl {
+	width:270px; padding:4px 0px 0px 5px; text-decoration:underline 2px;
+	font-size:x-large; font-style:italic; display:table-cell; }
+#header #hdrMsg { color:#FF0000; vertical-align:bottom; display:table-cell; }
+
+/* ◆ Main ◆ */
+#main { max-height:740px; overflow-y:auto; }
+
+/* ◆ Footer ◆ */
+#footer { border:solid 2px #A0A0A0; border-left:none; border-right:none; background:#C0FFFF; padding:10px 0px; }
+#footer input[type="button"]       { color:#000060; background:#FFFF80; border-width:3px; font-size:medium; padding:2px 11px; }
+#footer input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:italic; }
+
+/* ◆ TopMenu ◆ */
+.TopMenu { margin:0px 0px 0px 10px; }
+.TopMenu A       { background:#E0FFFF; color:#0000A0; }
+.TopMenu A:hover { background:#FFE0E0; }
+.TopMenu [id^="srvltTtl"] { font-style:italic; text-decoration:underline 2px; }
+
+/* ◆ CheckBox ◆ */
+.cbCond { margin:0px 0px 0px 10px; display:table; }
+.cbCond .btn { padding:10px 0px 0px 0px; }
+.cbCond div { vertical-align:bottom; display:table-cell; }
+.cbCond input[type="text"], .cbCond A { margin:0px 0px 0px 10px; }
+.cbCond input[type="checkbox"] { margin:0px 3px 0px 10px; }
+#cbTable { margin:0px 0px 0px 10px; max-height:570px; width:180px; overflow-y:auto; display:none; }
+#cbTable tr { text-align:center; }
+#cbTable [id^="cbTr"], #cbArea { display:none; }
+#cbTable .col { width:52px; border:solid 1px #A0A0A0; }
+#cbTable .bgc { background:#FFFFC0; }
+#cbTable input[type="checkbox"] { margin:0px 3px 0px 0px; }
+#cbTable A       { border:none; background:none; padding: 0px 0px 0px 5px; }
+#cbTable A:hover { font-style:normal; }
+
+/* ◆ StringConvert ◆ */
+.StrConv { margin:0px 0px 0px 10px; display:table; }
+.StrConv div { margin:0px 0px 0px 10px; vertical-align:middle; display:table-cell; }
+.StrConv textarea { margin:0px 10px 10px 10px; padding:3px 0px 3px 5px; }
+.StrConv input[type="radio"] { margin:0px 3px 0px 10px; }
+.StrConv #btnClr { font-size:small; display:none; }
+.StrConv #scHint { color:#FF0000; text-decoration:underline double 1px #0000FF; display:table-cell; }
+
+/* ◆ ExpectLottery ◆ */
+.expCond { margin:0px 0px 0px 10px; display:table; }
+.expCond p { text-align:right; margin:10px 0px 0px 0px; }
+.expCond input[type="text"] { margin:0px 0px 0px 10px; }
+.expCond input[type="radio"]    { margin:0px 3px 0px 10px; }
+.expCond input[type="checkbox"] { margin:0px 3px 0px 10px; }
+#resultToto { max-height:580px; max-width:920px; overflow-y:auto; display:none; }
+#resultLoto { max-height:580px; max-width:770px; overflow-y:auto; display:none; }
+#resultToto table    { margin:0px 0px 10px 10px; }
+#resultToto table tr, #resultLoto table tr { text-align:center; }
+#resultToto table td { width:25px; border:solid 1px #A0A0A0; }
+#resultLoto table    { margin:0px 0px 0px 10px; display:none; }
+#resultLoto table td { width:30px; border:solid 1px #A0A0A0; }
+
+/* ◆ MathProcess ◆ */
+.mpCond { margin:0px 0px 0px 10px; display:table; }
+.mpCond #mpHint { color:#FF0000; text-decoration:underline double 1px #0000FF; display:table-cell; }
+.mpCond input { margin:0px 0px 0px 10px; }
+.mpCond p { text-align:right; margin:10px 0px 0px 0px; }
+#mpIsPrime, #mpDivisors, #mpPrimes { margin:0px 0px 0px 10px; display:none; }
+.divisors { max-height:550px; max-width:920px; overflow-y:auto; display:block; }
+.primes   { max-height:570px; max-width:955px; overflow-y:auto; display:block; }
+.divisors td, .primes td { border:solid 1px #A0A0A0; padding:0px 4px; text-align:right; }
+
+/* ◆ DbOperation ◆ */
+.dboCond { margin:0px 0px 0px 10px; display:table; }
+#dboResult { max-height:510px; max-width:510px; overflow-y:auto; display:none; }
+#dboResult .dboRight { text-align:right; }
+#dboResultArea, #dboBtn { margin:0px 0px 0px 10px; display:none; }
+#dboResultArea .dboCount { display:table-cell; }
+#dboResultArea .spacer, .dboCond .spacer { margin:0px 0px 5px 0px; }
+.dboCond td, #dboResult td { border:solid 1px; padding:0px 4px; }
+
+/* ◆ Index.jsp ◆ */
+.indexJsp { margin:10px; width:950px; }
+.indexJsp div { margin:0px 0px 0px 10px; }
+.indexJsp [id^="tRow"] { display:none; }
+.indexJsp .right { display:table-cell; text-align:right; }
+.indexJsp A       { background:#E0FFFF; color:#0000A0; }
+.indexJsp A:hover { background:#FFFFC0; color:#C00000; }
+.indexJsp .ttl { width:120px; text-align:center; }
+.indexJsp #pageTtl { font-style:italic; text-decoration:underline 2px; }
+.indexJsp #stBody { max-height:600px; overflow-y:auto; display:none; }

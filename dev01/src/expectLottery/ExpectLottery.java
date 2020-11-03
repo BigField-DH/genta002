@@ -1,0 +1,36 @@
+package expectLottery;
+
+import java.security.NoSuchAlgorithmException;
+import javax.servlet.annotation.WebServlet;
+import base.Base;
+
+@WebServlet(Base.srvltEL)
+public class ExpectLottery extends Base {
+	private static final long serialVersionUID = 1L;
+
+	public ExpectLottery() {}
+
+    @Override
+	protected void doProcess() {
+		Base.bPutLog("");
+
+		if(bIsShow()) { bSession.setAttribute(bAttrBean, new ExpectLotteryBean()); return; }
+
+		ExpectLotteryBean bean;
+		try {
+			bean = new ExpectLotteryBean(bReq);
+			ExpectLotteryService svc = new ExpectLotteryService(bean);
+
+			if(bean.isToto()) {
+				svc.expectToto(); //Toto ó\ëzéÊìæ
+			} else {
+				svc.expectLoto(); //Loto ó\ëzéÊìæ
+			}
+			bSession.setAttribute(bAttrBean, bean); //èàóùê¨å˜éûÇÃÇ›
+
+		} catch (NumberFormatException | NoSuchAlgorithmException e) {
+			e.printStackTrace();
+			bReq.setAttribute(Base.cAttrBaseMsg, Base.bGetMessage(e));
+		}
+	}
+}
