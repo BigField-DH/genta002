@@ -8,7 +8,6 @@ public class MathProcessService {
 
 	private MathProcessBean mBean;
 	private final long mNumToCalc;
-	private final double mLimit = 100000.0;
 
 	public MathProcessService(MathProcessBean bean) {
 		mBean = bean;
@@ -20,7 +19,7 @@ public class MathProcessService {
 		Base.bPutLog("");
 
 		long rangeEnd = //”ÍˆÍ‚ÌãŒÀ
-				mNumToCalc + (long) Math.min(mLimit, Math.ceil(mBean.getMaxVal() / Math.ceil(mNumToCalc / 50)));
+				mNumToCalc + (long) Math.min(Base.pMpLimit, Math.ceil(Base.pMpMaxValue / Math.ceil(mNumToCalc / 50)));
 		List<Long> primes = new ArrayList<>(); //‘f”ƒŠƒXƒg
 		for(long i=mNumToCalc; i<=rangeEnd; i++) {
 			boolean flg = true;

@@ -12,8 +12,11 @@ public class Dummy extends Base {
 	protected void doProcess() throws RuntimeException {
 		Base.bPutLog("");
 
-		if("POST".equals(bReq.getMethod())) return; 
-		bReq.setAttribute(Base.cAttrBaseMsg, "♪ダミーぃだ♪");
+		if("POST".equals(bReq.getMethod())) return;
+		//bReq.setAttribute(Base.cAttrBaseMsg, "♪ダミーぃだ♪");
+		Base.bSetBaseMsg(bReq, "♪");
+		Base.bSetBaseMsg(bReq, "ダミーぃだ");
+		Base.bSetBaseMsg(bReq, "♪");
 		throw new RuntimeException("Dummy の GET は RuntimeException だべ");
 	}
 }

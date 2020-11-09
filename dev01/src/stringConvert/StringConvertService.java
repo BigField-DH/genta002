@@ -49,7 +49,8 @@ public class StringConvertService {
 			"", " "};
 
 		if(strArr.length != mrsArr.length) {
-			mReq.setAttribute(Base.cAttrBaseMsg, "Invalid Map Info");
+			//mReq.setAttribute(Base.cAttrBaseMsg, "Invalid Map Info");
+			Base.bSetBaseMsg(mReq, "Invalid Map Info");
 			return false;
 		}
 

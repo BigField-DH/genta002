@@ -11,5 +11,6 @@ public class TopMenu extends Base {
 	@Override
 	protected void doProcess() throws RuntimeException {
 		Base.bPutLog("");
+		if("POST".equals(bReq.getMethod())) Base.bGetPropMap(); //プロパティ値の一括取得
 	}
 }

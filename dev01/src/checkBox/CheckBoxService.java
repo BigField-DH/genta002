@@ -50,12 +50,12 @@ public class CheckBoxService {
 	protected boolean clear(CheckBoxBean bean) {
 		Base.bPutLog("");
 
-		List<String> cbClrList = Arrays.asList(Base.bGetParams(Const.prmItemCB, mReq)); //クリア対象(SIM,CHECK)
+		List<String> cbClrList = Arrays.asList(Base.bGetParamMap(Const.prmItemCB, mReq)); //クリア対象(SIM,CHECK)
 		boolean clrSim = cbClrList.contains(Const.cbSim);     //SIM選択時 TRUE
 		boolean clrCheck = cbClrList.contains(Const.cbCheck); //CHECK選択時 TRUE
 
 		//List of LPIDs checked
-		List<String> checkedLpIds = (!clrCheck) ? Arrays.asList(Base.bGetParams(Const.prmCbox, mReq)) : null;
+		List<String> checkedLpIds = (!clrCheck) ? Arrays.asList(Base.bGetParamMap(Const.prmCbox, mReq)) : null;
 
 		List<Object[]> subList = bean.getSubList(); //画面の明細を取得
 		for(int i=0; i<subList.size(); i++){

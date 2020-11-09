@@ -7,13 +7,9 @@ import base.Const;
 
 public class MathProcessBean {
 
-	private final String mKey = "MP_MaxValue";
+	public MathProcessBean() {}
 
-	public MathProcessBean() {
-		maxVal = Long.parseLong(Base.bGetPropValue(mKey));
-	}
-
-	private long maxVal;
+	private long maxVal = Base.pMpMaxValue;
 	public long getMaxVal() { return maxVal; }
 
 	private String itemRD = Const.rdSingle;

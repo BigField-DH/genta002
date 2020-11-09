@@ -36,8 +36,21 @@
 
 <div class="dboCond">
   <table>
-    <tr>
+<%--<tr>
       <td style="padding:0px; border:none">◆登録条件&nbsp;</td>
+      <td>col1 <input type="text" name="${C.prmInsCol1}" maxlength="6"  size="9"  /></td>
+      <td>col2 <input type="text" name="${C.prmInsCol2}" maxlength="9"  size="9"  /></td>
+      <td>col3 <input type="text" name="${C.prmInsCol3}" maxlength="19" size="19" /></td>
+      <td style="padding:0px; border:none">　<a href="javascript: dboExec('${C.actInsert}');">${C.actInsert}</a></td>
+    </tr> --%>
+    <tr>
+      <td style="padding:0px; border:none">◆登録条件1&nbsp;</td>
+      <td>col1 <input type="text" name="${C.prmInsCol1}" maxlength="6"  size="9"  /></td>
+      <td>col2 <input type="text" name="${C.prmInsCol2}" maxlength="9"  size="9"  /></td>
+      <td>col3 <input type="text" name="${C.prmInsCol3}" maxlength="19" size="19" /></td>
+    </tr>
+    <tr>
+      <td style="padding:0px; border:none">◆登録条件2&nbsp;</td>
       <td>col1 <input type="text" name="${C.prmInsCol1}" maxlength="6"  size="9"  /></td>
       <td>col2 <input type="text" name="${C.prmInsCol2}" maxlength="9"  size="9"  /></td>
       <td>col3 <input type="text" name="${C.prmInsCol3}" maxlength="19" size="19" /></td>
@@ -61,7 +74,7 @@
     <c:forEach begin="0" end="${oBeanDBO.subList.size()}" items="${oBeanDBO.subList}" var="one" varStatus="loop">
     <tr>
       <td class="dboRight">${loop.index + 1}</td>
-      <td><input type="checkbox" name="${C.prmCbox}" value="${one[0]}" /></td>
+      <td><input type="checkbox" name="${C.prmCbox}" value="${loop.index}" onClick="getCountChecked();" /></td>
       <td><input type="text" name="${C.prmUpdCol1}" value="${one[0]}" readonly       size="9"  /></td>
       <td><input type="text" name="${C.prmUpdCol2}" value="${one[1]}" maxlength="9"  size="9"  /></td>
       <td><input type="text" name="${C.prmUpdCol3}" value="${one[2]}" maxlength="19" size="19" /></td>
@@ -105,13 +118,22 @@ function dboExec(action){ //◆入力チェック、FORM実行
 		"${C.prmInsCol1}",  "${C.prmInsCol2}",   "${C.prmInsCol3}",   "${C.prmUpdCol2}",   "${C.prmUpdCol3}"
 	  , "${C.prmCondCol1}", "${C.prmCondCol2f}", "${C.prmCondCol2t}", "${C.prmCondCol3f}", "${C.prmCondCol3t}" ) );
 
-	if(action == "${C.actInsert}"){ //登録
+	if(action == "${C.actInsert}"){ //登録 ★複数件対応
 		if( !bIsValidInsertDBO( bGetObjByNm("${C.prmInsCol1}")[0]
 							  , bGetObjByNm("${C.prmInsCol2}")[0], bGetObjByNm("${C.prmInsCol3}")[0] ) ){ return; }
 
-	} else if(action == "${C.actUpdate}"){ //更新
-		const idx = bGetFormElem("${acro}", "${C.prmItemRD}").value;
-		if( !bIsValidUpdateDBO( bGetObjByNm("${C.prmUpdCol2}")[idx], bGetObjByNm("${C.prmUpdCol3}")[idx] ) ){ return; }
+	} else if(action == "${C.actUpdate}"){ //更新 ★複数件対応
+		const cBoxObj = bGetObjByNm("${C.prmCbox}");
+		var indexes = new Array();
+		for(i=0; i<cBoxObj.length; i++){ if(cBoxObj[i].checked) indexes.push(cBoxObj[i].value); }
+		console.log(indexes);
+
+		for(i=0; i<indexes.length; i++){
+			if( !bIsValidUpdateDBO( bGetObjByNm("${C.prmUpdCol2}")[indexes[i]], bGetObjByNm("${C.prmUpdCol3}")[indexes[i]] ) ){ return; }
+		}
+		//return;
+	/*	const idx = bGetFormElem("${acro}", "${C.prmItemRD}").value;
+		if( !bIsValidUpdateDBO( bGetObjByNm("${C.prmUpdCol2}")[idx], bGetObjByNm("${C.prmUpdCol3}")[idx] ) ){ return; }*/
 
 	} else { //検索
 		if( !bIsValidSearchDBO( bGetObjByNm("${C.prmCondCol1}")[0]
@@ -121,11 +143,20 @@ function dboExec(action){ //◆入力チェック、FORM実行
 	bExec("${acro}", "${C.cntxtDBO}", "POST", action); //実行
 }
 
-function copyValues(){ //◆検索結果欄から登録条件欄へ値をコピー
+function copyValues(){ //◆検索結果欄から登録条件欄へ値をコピー ★複数件対応
 	const idx = bGetFormElem("${acro}", "${C.prmItemRD}").value;
 	bGetObjByNm("${C.prmInsCol1}")[0].value = bGetObjByNm("${C.prmUpdCol1}")[idx].value;
 	bGetObjByNm("${C.prmInsCol2}")[0].value = bGetObjByNm("${C.prmUpdCol2}")[idx].value;
 	bGetObjByNm("${C.prmInsCol3}")[0].value = bGetObjByNm("${C.prmUpdCol3}")[idx].value;
+}
+
+function getCountChecked(){
+	const obj = bGetObjByNm("${C.prmCbox}");
+	var cnt = 0; //チェックの個数
+	for(i=0; i<obj.length; i++){ if(obj[i].checked) cnt++; } //チェックの個数をカウント
+	for(i=0; i<obj.length; i++){ obj[i].disabled = (5<=cnt) ? !obj[i].checked : false; } //チェックなしを非活性に
+	bSetDisplay("dboBtn", (1<=cnt) ? "table-cell" : "none"); //チェックあり → ボタン表示
+	//console.log(obj.value + " , ");
 }
 </script>
 <!-- ◆ ${srvltPath} END ◆ -->

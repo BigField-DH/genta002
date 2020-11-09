@@ -16,6 +16,7 @@ public final class Initialize implements ServletContextListener {
 		System.out.println("\n３◆◆◆◆◆◆◆◆◆　はじめまっせぇ　◆◆◆◆◆◆◆◆◆\n");
 
 		Base.bPutLog("");
+		Base.bGetPropMap(); //プロパティ値の一括取得
 
 		//applicationスコープに、サーバと同じ定数を設定
 		ev.getServletContext().setAttribute("C", new Const());

@@ -18,15 +18,17 @@ public class DbOperation extends Base {
 
 		DbOperationBean bean = (DbOperationBean)bSession.getAttribute(bAttrBean);
 
-		if(Const.actUpdate.equals(bAction) && bean == null) {
+		if(bean == null) {
 			Base.bPutError("セッション無効");
-			bReq.setAttribute(Base.cAttrBaseMsg, "セッション無効");
-			bSession.setAttribute(bAttrBean, new DbOperationBean()); return;
-		}
-		if(bean == null) bean = new DbOperationBean();
+			Base.bSetBaseMsg(bReq, "セッション無効");
+			bean = new DbOperationBean();
 
-		DbOperationService svc = new DbOperationService(bReq);
-		svc.execSQL(bean, bAction);
+			if(Const.actUpdate.equals(bAction)) { bSession.setAttribute(bAttrBean, bean); return; } //★Search以外にしたい
+		}
+
+		DbOperationService svc = new DbOperationService();
+		bean.setReqInfo(bReq, bAction);
+		svc.execSQL(bean);
 		bSession.setAttribute(bAttrBean, bean); //SESSIONに保存
     }
 }

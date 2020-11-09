@@ -58,18 +58,20 @@ public class Base extends HttpServlet {
 
 			if( !cActMap.get(bSrvlt).contains(bAction) ) { //許容Actionチェック
 				bPutError("Invalid Action '" + bAction + "'");
-				bReq.setAttribute(cAttrBaseMsg, bSrvlt + " : Invalid Action '" + bAction + "'");
+				//bReq.setAttribute(cAttrBaseMsg, bSrvlt + " : Invalid Action '" + bAction + "'");
+				bSetBaseMsg(bReq, bSrvlt + " : Invalid Action '" + bAction + "'");
 				return;
 			}
 			doProcess(); //個別処理
 			srvlt = bSrvlt; //遷移先
-			bReq.setAttribute(cAttrAcro, bAcro); //略称
 
 		} catch (RuntimeException e) {
 			bPutError(e + "\n"); e.printStackTrace();
-			bReq.setAttribute(cAttrBaseMsg, bSrvlt + " : " + bGetMessage(e));
+			//bReq.setAttribute(cAttrBaseMsg, bSrvlt + " : " + bGetMessage(e));
+			bSetBaseMsg(bReq, bSrvlt + " : " + bGetMessage(e));
 		} finally {
 			bPutLog(srvlt + " : committed " + bRes.isCommitted() + "\n");
+			bReq.setAttribute(cAttrAcro, srvlt); //略称
 			bReq.setAttribute(cAttrSrvlt, srvlt); //遷移先
 			bReq.getServletContext().getRequestDispatcher(cJspBase).forward(bReq, bRes);
 			//putLog("◆ " + bSrvlt + " ◆ END\n");
@@ -102,7 +104,8 @@ public class Base extends HttpServlet {
 	//◆ 初期表示時処理
 	protected boolean bIsShow() {
 		if(!Const.actShow.equals(bAction)) return false;
-		bReq.setAttribute(cAttrBaseMsg, Const.actShow + bAcro);
+		//bReq.setAttribute(cAttrBaseMsg, Const.actShow + bAcro);
+		bSetBaseMsg(bReq, Const.actShow + bAcro);
 		return true;
 	}
 
@@ -110,7 +113,7 @@ public class Base extends HttpServlet {
 
 	private static final String cJspBase   = "/jsp/Base.jsp"; //◆Common Page
 
-	public  static final String cAttrBaseMsg = "baseMsg";   //◆Attributes
+	private static final String cAttrBaseMsg = "baseMsg";   //◆Attributes
 	private static final String cAttrSrvlt   = "srvltPath";
 	private static final String cAttrAcro    = "acro";
 
@@ -163,13 +166,11 @@ public class Base extends HttpServlet {
 	}
 
 	//◆リクエストパラメータMap取得
-	public static String[] bGetParams(String name, HttpServletRequest req) {
+	public static String[] bGetParamMap(String name, HttpServletRequest req) {
 		try {
-			String[] params = req.getParameterMap().get(name);
-			if(params == null) { bPutError(name + " : NULL"); return new String[] {}; }
-			return params;
+			return req.getParameterMap().get(name);
 		} catch (Throwable e) {
-			bPutError(name + " : " + e); return new String[] {};
+			bPutError(name + " : " + e); return null;
 		}
 	}
 
@@ -183,8 +184,13 @@ public class Base extends HttpServlet {
 		System.err.println("  " + bGetInfo() + " : " + msg); bSleep();
 	}
 
+	//◆Debugログ出力
+	public static <T> void bPutDebug(T msg) {
+		if(pBsDebug) { System.err.print(msg); }
+	}
+
 	//◆Sleep
-	private static void bSleep() {
+	public static void bSleep() {
 		try { Thread.sleep(3); } catch (Throwable e) { bPutError(e); }
 	}
 
@@ -192,46 +198,23 @@ public class Base extends HttpServlet {
 	private static String bGetInfo() {
 		try {
 			String[] info = Thread.currentThread().getStackTrace()[3].toString().split("[.(]");
-			return (info != null && 3 <= info.length) ? info[1] + "." + info[2] + "()" : "";
+			return info[1] + "." + info[2] + "()";
 		} catch (Throwable e) {
 			bPutError(e); return "";
 		}
 	}
 
 	//◆ParseInt
-	public static Integer bPrseInt(String param, Integer defVal) {
+	public static Integer bParseInt(String param, Integer defVal) {
 		try { return Integer.parseInt(param); } catch (Throwable e) { bPutError(e); return defVal; }
 	}
 	//◆ParseLong
 	public static Long bParseLong(String param, Long defVal) {
 		try { return Long.parseLong(param); } catch (Throwable e) { bPutError(e); return defVal; }
 	}
-
-	//◆プロパティ値取得
-	private static final String cPropDir  = "C:\\dev\\Git\\git\\genta\\dev01\\WebContent\\properties\\";
-	private static final String cPropFile = "DefaultValue.properties";
-	private static Properties bProp;
-	public static String bGetPropValue(String key) {
-		try {
-			if(bProp == null) bProp = new Properties();
-			bProp.load(new FileInputStream(cPropDir + cPropFile));
-			String value = bProp.getProperty(key);
-			if(value == null) { bPutError(key + " : NULL"); return ""; }
-			bPutLog(key + " : " + value);
-			return value;
-		} catch (Throwable e) {
-			bPutError(key + " : " + e); return "";
-		}
-	}
-
-	//◆明細件数取得
-	public static int bGetPrmCount(HttpServletRequest req, String key){
-		try {
-			return Integer.parseInt(bGetParam(Const.prmCount, req));
-		} catch (NumberFormatException e) {
-			bPutError(e);
-			return bPrseInt(bGetPropValue(key), 0);
-		}
+	//◆ParseDouble
+	public static Double bParseDouble(String param, Double defVal) {
+		try { return Double.parseDouble(param); } catch (Throwable e) { bPutError(e); return defVal; }
 	}
 
 	//◆配列 → CSV
@@ -267,20 +250,83 @@ public class Base extends HttpServlet {
 	}
 
 	//◆Timestamp型へ変換
-//	public static Timestamp bConvDate(String inDate) {
-//		return bConvDate(inDate, "", "");
-//	}
-	public static Timestamp bConvDate(String inDate, String defDate, String time) {
+	public static Timestamp bConvDateTime(String inDateTime, String defDateTime) {
 		try {
-			return Timestamp.valueOf(inDate + time);
+			return Timestamp.valueOf(inDateTime);
 		} catch (Throwable e) {
-			bPutError(inDate + time + " : " + e);
+			bPutError(inDateTime + " : " + e);
 			try {
-				return (defDate != null) ? Timestamp.valueOf(defDate + time) : null;
+				return (defDateTime != null) ? Timestamp.valueOf(defDateTime) : null;
 			} catch (Throwable e2) {
-				bPutError(e2); return (defDate != null) ? Timestamp.valueOf(LocalDateTime.now()) : null;
+				bPutError(e2); return (defDateTime != null) ? Timestamp.valueOf(LocalDateTime.now()) : null;
 			}
 		}
 	}
 
+	//◆プロパティ値取得
+	private static final String cPropDir  = "C:\\dev\\Git\\git\\genta\\dev01\\WebContent\\properties\\";
+	private static final String cPropFile = "DefaultValue.properties";
+/*	private static Properties bProp;
+	public static String bGetPropValue(String key) {
+		try {
+			if(bProp == null) bProp = new Properties();
+			bProp.load(new FileInputStream(cPropDir + cPropFile));
+			String value = bProp.getProperty(key);
+			if(value == null) { bPutError(key + " : NULL"); return ""; }
+			bPutLog(key + " : " + value);
+			return value;
+		} catch (Throwable e) {
+			bPutError(key + " : " + e); return "";
+		}
+	}*/
+
+	//◆プロパティ値取得(一括)
+	private static boolean pBsDebug = false;  //Debugモード
+	public  static int     pCbCount = 0;      //リスト件数
+	public  static int     pElCount = 0;      //口数
+	public  static int     pElBound = 0;      //乱数上限値
+	public  static String  pElDiv = null;     //除数
+	public  static int     pElMatches = 0;    //試合数
+	public  static long    pMpMaxValue = 0L;  //算出最大値
+	public  static double  pMpLimit = 0;      //範囲上限値
+	public  static String  pDboConURL = null; //DB接続URL
+	private static Map<String, String> pMap = null;
+	private static final String[] cKeys = new String[]{
+			"BS_DebugMode","CB_ListCount","EL_ShareCount","EL_Bound","EL_Divisors","EL_Matches","MP_MaxValue","MP_Limit","DBO_ConnectionURL"};
+	public static void bGetPropMap() {
+		try {
+			Properties prop = new Properties();
+			prop.load(new FileInputStream(cPropDir + cPropFile));
+
+			pMap = new HashMap<>();
+			for(int i=0; i<cKeys.length; i++) {
+				String value = null;
+				try {
+					value = prop.getProperty(cKeys[i]);
+				} catch (Throwable e) {
+					bPutError(cKeys[i] + " : " + e);
+				}
+				pMap.put(cKeys[i], value);
+			}
+			bPutLog(pMap);
+
+			pBsDebug    = pMap.get(cKeys[0]).equals("1"); //取得したプロパティを展開
+			pCbCount    = Base.bParseInt( pMap.get(cKeys[1]), 0 );
+			pElCount    = Base.bParseInt( pMap.get(cKeys[2]), 0 );
+			pElBound    = Base.bParseInt( pMap.get(cKeys[3]), 0 );
+			pElDiv      = pMap.get(cKeys[4]);
+			pElMatches  = Base.bParseInt( pMap.get(cKeys[5]), 0 );
+			pMpMaxValue = bParseLong(pMap.get(cKeys[6]),0L);
+			pMpLimit    = bParseDouble(pMap.get(cKeys[7]),0.0);
+			pDboConURL  = pMap.get(cKeys[8]);
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+
+	//◆BaseMsgの追記型設定
+	public static <T> void bSetBaseMsg(HttpServletRequest req, T msg) {
+		Object curMsg = req.getAttribute(cAttrBaseMsg);
+		req.setAttribute(cAttrBaseMsg, (curMsg != null) ? curMsg + " / " + msg : msg);
+	}
 }

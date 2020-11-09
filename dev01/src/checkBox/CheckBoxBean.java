@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import base.Base;
+import base.Const;
 
 public class CheckBoxBean {
 
-	private final String mKey  = "CB_ListCount";
-
-	public CheckBoxBean(){ count = Base.bPrseInt(Base.bGetPropValue(mKey), 0); }
+	public CheckBoxBean(){}
 	public CheckBoxBean(HttpServletRequest req){
-		count = Base.bGetPrmCount(req, mKey); //口数を初期化 (画面設定値 > プロパティ値 > 0)
+		count = Base.bParseInt( Base.bGetParam(Const.prmCount, req), Base.pCbCount );
 		subList = new ArrayList<>();
 	}
 
@@ -29,7 +28,7 @@ public class CheckBoxBean {
 		inSelected = lpIdsCsv;
 	}
 
-	private int count;
+	private int count = Base.pCbCount;
 	public int getCount() { return count; }
 
 	private String inSelected = "106,108"; //画面表示用のLPIDのリスト(CSV形式)

@@ -18,7 +18,7 @@ public class MathProcess extends Base {
 		MathProcessBean bean = (MathProcessBean)bSession.getAttribute(bAttrBean);
 		if(bean == null) {
 			Base.bPutError("セッション無効");
-			bReq.setAttribute(Base.cAttrBaseMsg, "セッション無効 リトライ");
+			Base.bSetBaseMsg(bReq, "セッション無効");
 			bSession.setAttribute(bAttrBean, new MathProcessBean()); return;
 		}
 

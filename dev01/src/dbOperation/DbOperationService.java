@@ -1,142 +1,130 @@
 package dbOperation;
 
-import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import javax.servlet.http.HttpServletRequest;
 import base.Base;
-import base.Const;
 
 public class DbOperationService {
 
-	private static final String mKey = "DBO_ConnectionURL";
-	private HttpServletRequest mReq;
+	public DbOperationService() {}
 
-	public DbOperationService(HttpServletRequest req) {
-		mReq = req;
-	}
+	protected void execSQL(DbOperationBean bean) {
 
-	protected void execSQL(DbOperationBean bean, String action) {
-
-		Connection con = null;
 		try {
-			con = DriverManager.getConnection(Base.bGetPropValue(mKey));
-			con.setAutoCommit(false);
+			bean.con = DriverManager.getConnection(Base.pDboConURL);
+			bean.con.setAutoCommit(false);
 
-			if(Const.actInsert.equals(action)) {
-				insert(bean, con); //登録
-			} else if(Const.actUpdate.equals(action) || Const.actDelete.equals(action)) {
-				update(bean, con, action); //更新・削除
+			if(bean.isSearch) {
+				search(bean); //検索
 			} else {
-				search(bean, con); //検索
+				updateAll(bean);  //登録・更新・削除(一括)
 			}
+			Base.bSetBaseMsg(bean.req, bean.getSb());
 
 		} catch (Throwable e) {
 			e.printStackTrace();
-			mReq.setAttribute(Base.cAttrBaseMsg, Base.bGetMessage(e));
+			Base.bSetBaseMsg(bean.req, Base.bGetMessage(e));
 			try {
-				if(con != null) { Base.bPutError("Connection RollBack"); con.rollback(); }
+				if(bean.con != null) { Base.bPutError("RollBack"); bean.con.rollback(); }
 			} catch (SQLException e1) {
 				Base.bPutError("ROLLBACK 失敗: " + e1);
 			}
 		} finally {
 			try {
-				if(con != null) { Base.bPutLog("Connection Close"); con.close(); }
+				if(bean.con != null) { Base.bPutLog("Connection Close"); bean.con.close(); }
 			} catch (SQLException e) {
 				Base.bPutError("CLOSE 失敗: " + e);
 			}
 		}
 	}
 
-	//登録
-	private void insert(DbOperationBean bean, Connection con) throws SQLException {
+	//更新・削除(一括)
+	private void updateAll(DbOperationBean bean) throws SQLException {
 		Base.bPutLog("");
 
-		bean.setInsCols(mReq); //登録値取得
-		execUpdate(bean, con, "INSERT INTO tbl2 (col2, col3, col1) VALUES (?, ?, ?)"); //実行
-		//execUpdate("INSERT INTO tbl2 (col2, col3, colx) VALUES (?, ?, ?)"); //for Debug
+		bean.setInsList(); //登録値 / 更新値取得
 
-		bean.setSearchCond(); //検索条件設定
-		select(bean, con); //登録したデータの検索、表示
-	}
+		for(int i=0; i<bean.insList.size(); i++) {
+			bean.setPk(i);
 
-	//更新・削除
-	private void update(DbOperationBean bean, Connection con, String action) throws SQLException {
-		Base.bPutLog("");
+			if(!bean.isInsert) {
+				//ロックチェック
+				String sqlLock = "SELECT col1,col2,col3 FROM tbl2 WITH (XLOCK,ROWLOCK,NOWAIT) WHERE col1 = '" + bean.pk + "'";
+				Base.bPutLog(sqlLock);
+				ResultSet rsLock = bean.con.prepareStatement(
+						sqlLock , ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery();
 
-		bean.setInsCols( mReq, Integer.parseInt(Base.bGetParam(Const.prmItemRD, mReq)) ); //更新値取得
-		String col1 = bean.getInsCol1();
-
-		//ロックチェック
-		String sqlLock = "SELECT col1,col2,col3 FROM tbl2 WITH (XLOCK,ROWLOCK,NOWAIT) WHERE col1 = '" + col1 + "'";
-		//String sqlLock = "SELECT col1,col2,col3 FROM tbl2 WITH (XLOCK,ROWLOCK,NOWAIT) WHERE col1 = '@@@'"; //for Debug
-		//String sqlLock = "SELECT colx,col2,col3 FROM tbl2 WITH (XLOCK,ROWLOCK,NOWAIT) WHERE col1 = '" + col1 + "'"; //for Debug
-		Base.bPutLog(sqlLock);
-		ResultSet rsLock = con.prepareStatement(
-				sqlLock , ResultSet.TYPE_SCROLL_INSENSITIVE, ResultSet.CONCUR_READ_ONLY).executeQuery();
-
-		if(rsLock.last() && rsLock.getRow() == 1) {
-			StringBuilder sql = new StringBuilder(); //更新用SQL
-			if(Const.actDelete.equals(action)) {
-				sql.append("DELETE FROM tbl2 WHERE col1 = '" + col1 + "'");
-			} else {
-				sql.append("UPDATE tbl2 SET col2 = ?, col3 = ? WHERE col1 = ?");
-				//sql.append("UPDATE tbl2 SET col2 = ?, col3 = ? WHERE col1 = ? and 'a' = '1'"); //for Debug
-				//sql.append("UPDATE tbl2 SET col2 = ?, col3 = ? WHERE colx = ?"); //for Debug
+				if( !(rsLock.last() && rsLock.getRow()==1) ) {
+					Base.bPutError(bean.pk + ":ロック不可");
+					bean.appendSb("ロック不可");
+					continue;//con.rollback();
+				}
 			}
-
-			execUpdate(bean, con, sql.toString()); //実行;
-
-		} else {
-			con.rollback();
-			Base.bPutError("該当データなし(既にロックされてるかも): " + col1);
-			mReq.setAttribute(Base.cAttrBaseMsg, "該当データなし(既にロックされてるかも): " + col1);
+			execUpdateAll2(bean, i); //実行;
 		}
-		select(bean, con); //直近と同じ条件で検索
+		if(!bean.isInsert) select(bean); //直近と同じ条件で検索
+		//登録したデータの検索、表示★Insert時
 	}
 
-	//更新SQL実行 (登録・更新・削除)
-	private void execUpdate(DbOperationBean bean, Connection con, String sql) throws SQLException {
-		Base.bPutLog("");
+	//更新SQL実行 (登録・更新・削除) (一括)
+	private void execUpdateAll2(DbOperationBean bean, int i) {
+		//Base.bPutLog("");
 
-		String cmd = sql.split(" ")[0];
-
-		Base.bPutLog(sql);
-		PreparedStatement pStmt = con.prepareStatement(sql);
-
-		if(!Const.actDelete.toUpperCase().equals(cmd)) bean.setSqlInsParams(pStmt);
-
-		if(pStmt.executeUpdate() != 1) {
-			con.rollback();
-			Base.bPutError(cmd + " 失敗(その他の理由)");
-			mReq.setAttribute(Base.cAttrBaseMsg, cmd + " 失敗(その他の理由)");
-			return;
+		String sql = null; //SQL定義
+		if(bean.isInsert) {
+			sql = "INSERT INTO tbl2 (col2, col3, col1) VALUES (?, ?, ?)";
+		} else if(bean.isDelete) {
+			sql = "DELETE FROM tbl2 WHERE col1 = '" + bean.pk + "'";
+		} else {
+			sql = "UPDATE tbl2 SET col2 = ?, col3 = ? WHERE col1 = ?";
 		}
-		con.commit();
-		mReq.setAttribute(Base.cAttrBaseMsg, cmd + " 成功");
+		Base.bPutLog(sql);
+
+		try {
+			PreparedStatement pStmt = bean.con.prepareStatement(sql);
+	
+			if(!bean.isDelete) Base.bPutLog( bean.setSqlInsParamsAll(pStmt, i) );
+	
+			if(pStmt.executeUpdate() != 1) {
+				Base.bPutError(bean.pk + ":失敗(その他の理由) RollBack");
+				bean.appendSb("失敗");
+				bean.con.rollback(); return;
+			}
+			bean.con.commit();
+			bean.appendSb("成功");
+
+		} catch (SQLException e) {
+			Base.bPutError(bean.pk + ":失敗: " + e);//e.printStackTrace();
+			bean.appendSb(Base.bGetMessage(e));
+			try {
+				if(bean.con != null) { Base.bPutError(bean.pk + ":RollBack"); bean.con.rollback(); }
+			} catch (SQLException e1) {
+				Base.bPutError(bean.pk + ":RollBack 失敗: " + e1);
+			}
+		}
 	}
 
 	//検索
-	private void search(DbOperationBean bean, Connection con) throws SQLException {
+	private void search(DbOperationBean bean) throws SQLException {
 		Base.bPutLog("");
-		bean.setSearchCond(mReq); //画面入力条件を取得
-		select(bean, con); //検索
+		bean.setSearchCond(); //画面入力条件を取得
+		select(bean); //検索
 	}
 
 	//SELECT
-	private void select(DbOperationBean bean, Connection con) throws SQLException{
+	private void select(DbOperationBean bean) throws SQLException{
 
 		StringBuilder sqlSel = new StringBuilder("SELECT col1,col2,col3 FROM tbl2 WITH (NOLOCK) ");
 		//StringBuilder sqlSel = new StringBuilder("SELECT colx,col2,col3 FROM tbl2 WITH (NOLOCK) "); //for Debug
 		sqlSel.append("WHERE col1 LIKE ? AND col2 BETWEEN ? AND ? AND ( ");
 		if(!bean.hasCondCol3()) sqlSel.append("col3 IS NULL OR ");
-		sqlSel.append("col3 BETWEEN ? AND ? ) ORDER BY " + bean.getSortOrder() );
+		sqlSel.append("col3 BETWEEN ? AND ? ) ORDER BY " + bean.sortOrder );
 		Base.bPutLog(sqlSel);
 
-		PreparedStatement pStmtSel = con.prepareStatement(sqlSel.toString());
-		bean.setSqlCondParams(pStmtSel);
+		PreparedStatement pStmtSel = bean.con.prepareStatement(sqlSel.toString());
+		Base.bPutLog( bean.setSqlCondParams(pStmtSel) );
 
 		bean.setSubList(pStmtSel.executeQuery()); //検索実行、明細へ設定
 	}

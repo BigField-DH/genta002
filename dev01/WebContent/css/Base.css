@@ -10,6 +10,8 @@ A:hover { color:#C00000; border:solid 1px #C00000; font-style:italic; }
 /* ◆ Common ◆ */
 .baseStyle { margin:5px; color:#600000; background:#FFFBF0; width:960px; display:none; }
 .none, #hr { display:none; }
+input[type="button"]       { color:#000060; background:#FFFF80; border-width:3px; font-size:medium; padding:2px 11px; }
+input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:italic; }
 
 /* ◆ Header ◆ */
 #header {

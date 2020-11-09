@@ -25,7 +25,7 @@ public class CheckBox extends Base {
 				svc.clear(bean);
 			} else {
 				Base.bPutError("セッション無効");
-				bReq.setAttribute(Base.cAttrBaseMsg, "セッション無効");
+				Base.bSetBaseMsg(bReq, "セッション無効");
 				bean = new CheckBoxBean();
 			}
 

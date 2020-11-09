@@ -10,7 +10,7 @@
     ◆判定要領
     <label><input type="radio" name="${C.prmItemRD}" value="${C.rdSingle}" />単独</label>
     <label><input type="radio" name="${C.prmItemRD}" value="${C.rdRange}"  />範囲</label>　　<br>
-    <p><a href="javascript: mpExec();">Calculate</a>　　</p>
+    <p><a href="javascript: mpExec();">Calculate</a><input type="button" onClick="mpExec();" value="Calculate" />　　</p>
   <div id="mpHint"></div>
 </div>
 
@@ -45,8 +45,8 @@
 
 <script type="text/javascript">
 //メンバー定数
-const limit = ${oBeanMP.maxVal}; //long_max は 9223372036854775807
-const mpHint = limit + " 以下の正の整数を指定してね";
+const limit = ${oBeanMP.maxVal}; //long_max は 9223372036854775807 ★ゼロの時、ボタン非活性に
+var mpHint = limit + " 以下の正の整数を指定してね";
 
 //初期設定
 function initMP(){

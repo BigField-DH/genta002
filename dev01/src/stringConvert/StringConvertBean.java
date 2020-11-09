@@ -11,7 +11,7 @@ public class StringConvertBean {
 		String inStrPrm = Base.bGetParam(Const.prmInStr, req); //Input String
 		inStr = inStrPrm.replaceAll("\r\n", "\\\\r\\\\n"); //to display
 		inStrPg = inStrPrm.replaceAll("[\\s\\h]", " "); //for Process below
-		itemRD = Base.bPrseInt(Base.bGetParam(Const.prmItemRD, req), Const.rd1Rvrs); //Reverse or Morse(2,3)
+		itemRD = Base.bParseInt( Base.bGetParam(Const.prmItemRD, req), Const.rd1Rvrs ); //Reverse or Morse(2,3)
 	}
 
 	private String outStr;
@@ -23,7 +23,6 @@ public class StringConvertBean {
 	public String getInStr() { return inStr; }
 	private String inStrPg;
 	protected String getInStrPg() { return inStrPg; }
-	
 
 	private int itemRD = Const.rd1Rvrs;
 	public int getItemRD() { return itemRD; }

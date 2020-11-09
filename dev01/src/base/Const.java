@@ -102,8 +102,8 @@ public final class Const {
 	public String getActUpdate()  { return actUpdate; }
 	public String getActDelete()  { return actDelete; }
 
-	public int getRd0Mrs()    { return rd0Mrs; }
-	public int getRd1Rvrs()  { return rd1Rvrs; }
+	public int getRd0Mrs()      { return rd0Mrs; }
+	public int getRd1Rvrs()     { return rd1Rvrs; }
 	public int getRd2MrsToStr() { return rd2MrsToStr; }
 	public int getRd3StrToMrs() { return rd3StrToMrs; }
 	public String getRdSingle() { return rdSingle; }

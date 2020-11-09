@@ -40,7 +40,7 @@
     <c:forEach begin="0" end="${oBeanEL.sharesMini.size()}" items="${oBeanEL.sharesMini}" var="one" varStatus="loop5">
     <tr>
       <th>S${loop5.index + 1}</th>
-      <td>${one[0]}</td><td>${one[1]}</td><td>${one[2]}</td><td>${one[3]}</td><td>${one[4]}</td>
+      <c:forEach begin="0" end="${one.size()}" items="${one}" var="num"><td>${num}</td></c:forEach>
     </tr>
     </c:forEach>
   </table>
@@ -49,7 +49,7 @@
     <c:forEach begin="0" end="${oBeanEL.sharesSix.size()}" items="${oBeanEL.sharesSix}" var="one" varStatus="loop6">
     <tr>
       <th>S${loop6.index + 1}</th>
-      <td>${one[0]}</td><td>${one[1]}</td><td>${one[2]}</td><td>${one[3]}</td><td>${one[4]}</td><td>${one[5]}</td>
+      <c:forEach begin="0" end="${one.size()}" items="${one}" var="num"><td>${num}</td></c:forEach>
     </tr>
     </c:forEach>
   </table>
@@ -58,7 +58,7 @@
     <c:forEach begin="0" end="${oBeanEL.sharesSeven.size()}" items="${oBeanEL.sharesSeven}" var="one" varStatus="loop7">
     <tr>
       <th>S${loop7.index + 1}</th>
-      <td>${one[0]}</td><td>${one[1]}</td><td>${one[2]}</td><td>${one[3]}</td><td>${one[4]}</td><td>${one[5]}</td><td>${one[6]}</td>
+      <c:forEach begin="0" end="${one.size()}" items="${one}" var="num"><td>${num}</td></c:forEach>
     </tr>
     </c:forEach>
   </table>

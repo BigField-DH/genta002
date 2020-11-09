@@ -16,9 +16,8 @@ public class ExpectLottery extends Base {
 
 		if(bIsShow()) { bSession.setAttribute(bAttrBean, new ExpectLotteryBean()); return; }
 
-		ExpectLotteryBean bean;
 		try {
-			bean = new ExpectLotteryBean(bReq);
+			ExpectLotteryBean bean = new ExpectLotteryBean(bReq);
 			ExpectLotteryService svc = new ExpectLotteryService(bean);
 
 			if(bean.isToto()) {
@@ -30,7 +29,7 @@ public class ExpectLottery extends Base {
 
 		} catch (NumberFormatException | NoSuchAlgorithmException e) {
 			e.printStackTrace();
-			bReq.setAttribute(Base.cAttrBaseMsg, Base.bGetMessage(e));
+			Base.bSetBaseMsg(bReq, Base.bGetMessage(e));
 		}
 	}
 }
