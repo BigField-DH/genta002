@@ -23,7 +23,7 @@ public class DbOperation extends Base {
 			Base.bSetBaseMsg(bReq, "セッション無効");
 			bean = new DbOperationBean();
 
-			if(Const.actUpdate.equals(bAction)) { bSession.setAttribute(bAttrBean, bean); return; } //★Search以外にしたい
+			if(!Const.actSearch.equals(bAction)) { bSession.setAttribute(bAttrBean, bean); return; }
 		}
 
 		DbOperationService svc = new DbOperationService();

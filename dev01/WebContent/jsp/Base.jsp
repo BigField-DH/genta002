@@ -18,14 +18,14 @@ if(<%= (e != null) %>){ alert("Throwable"); location.replace("${C.cntxtJspIndex}
 bCheckSrvltPath("${srvltPath}", ""); //サーブレットパスのチェック
 </script>
 
-<body class="baseStyle">
+<body class="baseBody">
 <!-- ◆ Header START ◆ -->
 <div id="header"><b id="hdrTtl">◆</b><span id="hdrMsg">◆</span></div>
 <!-- ◆ Header END ◆ -->
 
 <!-- ◆ Main START ◆ -->
 <%-- <form id="main"><input type="hidden" name="${C.prmAction}" value="" /> --%>
-<form id="${acro}"><input type="hidden" name="${C.prmAction}" value="" />
+<form id="${acro}" class="baseForm"><input type="hidden" name="${C.prmAction}" value="" />
 <hr>
   <c:if test="${srvltPath != null && srvltPath != ''}">
     <jsp:include page="${srvltPath.substring(1)}.jsp" flush="false" />
@@ -37,12 +37,14 @@ bCheckSrvltPath("${srvltPath}", ""); //サーブレットパスのチェック
 
 <!-- ◆ Footer START ◆ -->
 <div id="footer">
-  　<input type="button" onClick="bExec('${acro}', '${C.cntxtTM}',  'POST',             '')" name="ftrBtn" value="" />
+  　<input type="button" onClick="bExec('${acro}', '${C.cntxtTM}',  'POST', '${C.actShow}')" name="ftrBtn" value="" />
   　<input type="button" onClick="bExec('${acro}', '${C.cntxtCB}',  'POST', '${C.actShow}')" name="ftrBtn" value="" />
   　<input type="button" onClick="bExec('${acro}', '${C.cntxtSC}',  'POST', '${C.actShow}')" name="ftrBtn" value="" />
   　<input type="button" onClick="bExec('${acro}', '${C.cntxtEL}',  'POST', '${C.actShow}')" name="ftrBtn" value="" />
   　<input type="button" onClick="bExec('${acro}', '${C.cntxtMP}',  'POST', '${C.actShow}')" name="ftrBtn" value="" />
   　<input type="button" onClick="bExec('${acro}', '${C.cntxtDBO}', 'POST', '${C.actShow}')" name="ftrBtn" value="" />
+<div style="margin:10px 0px;"></div>
+  　<input type="button" onClick="bExec('${acro}', '${C.cntxtAM}',  'POST', '${C.actShow}')" name="ftrBtn" value="" />
 </div>
 <!-- ◆ Footer END ◆ -->
 </body>

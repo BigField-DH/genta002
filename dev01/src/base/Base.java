@@ -58,7 +58,6 @@ public class Base extends HttpServlet {
 
 			if( !cActMap.get(bSrvlt).contains(bAction) ) { //許容Actionチェック
 				bPutError("Invalid Action '" + bAction + "'");
-				//bReq.setAttribute(cAttrBaseMsg, bSrvlt + " : Invalid Action '" + bAction + "'");
 				bSetBaseMsg(bReq, bSrvlt + " : Invalid Action '" + bAction + "'");
 				return;
 			}
@@ -67,11 +66,10 @@ public class Base extends HttpServlet {
 
 		} catch (RuntimeException e) {
 			bPutError(e + "\n"); e.printStackTrace();
-			//bReq.setAttribute(cAttrBaseMsg, bSrvlt + " : " + bGetMessage(e));
 			bSetBaseMsg(bReq, bSrvlt + " : " + bGetMessage(e));
 		} finally {
 			bPutLog(srvlt + " : committed " + bRes.isCommitted() + "\n");
-			bReq.setAttribute(cAttrAcro, srvlt); //略称
+			bReq.setAttribute(cAttrAcro, bAcro);  //略称
 			bReq.setAttribute(cAttrSrvlt, srvlt); //遷移先
 			bReq.getServletContext().getRequestDispatcher(cJspBase).forward(bReq, bRes);
 			//putLog("◆ " + bSrvlt + " ◆ END\n");
@@ -123,29 +121,28 @@ public class Base extends HttpServlet {
 	public    static final String srvltEL  = "/ExpectLottery";
 	public    static final String srvltMP  = "/MathProcess";
 	public    static final String srvltDBO = "/DbOperation";
+	public    static final String srvltAM  = "/AtndMgt";
 	protected static final String srvltDmy = "/Dummy";
 
-	private static final Map<String, List<String>> cActMap = new HashMap<>() { //◆Servlet - Action Mappings
-		private static final long serialVersionUID = 1L;
-	{
-		put(srvltTM,  Arrays.asList(""));
-		put(srvltCB,  Arrays.asList(Const.actShow, Const.actCreate, Const.actClear));
-		put(srvltSC,  Arrays.asList(Const.actShow, Const.actConvert));
-		put(srvltEL,  Arrays.asList(Const.actShow, Const.actExpect));
-		put(srvltMP,  Arrays.asList(Const.actShow, Const.actCalc));
-		put(srvltDBO, Arrays.asList(Const.actShow, Const.actSearch, Const.actInsert, Const.actUpdate, Const.actDelete));
-		put(srvltDmy, Arrays.asList(""));
-	}};
+	private static Map<String, List<String>> cActMap;
+	private static void setActMap(String[] pActions) {
+		cActMap = new HashMap<>();
+		for(int i=0; i<pActions.length; i++) {
+			String[] one = pActions[i].split("_");
+			cActMap.put(one[0], Arrays.asList(one[1].split("@")));
+		}
+	}
 
-	private static final Map<String, String> cAcroMap = new HashMap<>() {  //◆Servlet Acronims
-		private static final long serialVersionUID = 1L;
-	{
-		put(srvltTM, "TM"); put(srvltCB, "CB"); put(srvltSC,  "SC");
-		put(srvltEL, "EL"); put(srvltMP, "MP"); put(srvltDBO, "DBO"); put(srvltDmy, "Dmy");
-	}};
+	private static Map<String, String> cAcroMap;
+	private static void setAcroMap(String[] pAcros) {
+		cAcroMap = new HashMap<>();
+		for(int i=0; i<pAcros.length; i++) {
+			String[] one = pAcros[i].split("_");
+			cAcroMap.put(one[0], one[1]);
+		}
+	}
 
 	private static final List<String> cSrvltGettable = Arrays.asList(srvltTM, srvltDmy); //◆Gettable Servlets
-
 
 	//◆ Utility ◆//
 
@@ -263,70 +260,69 @@ public class Base extends HttpServlet {
 		}
 	}
 
+	//◆BaseMsgの追記型設定
+	public static <T> void bSetBaseMsg(HttpServletRequest req, T msg) {
+		Object curMsg = req.getAttribute(cAttrBaseMsg);
+		req.setAttribute(cAttrBaseMsg, (curMsg != null) ? curMsg + " / " + msg : msg);
+	}
+
 	//◆プロパティ値取得
+	private static boolean  pBsDebug    = false; //Debugモード
+	public  static int      pCbCount    = 0;     //リスト件数
+	public  static int      pElCount    = 0;     //口数
+	public  static int      pElBound    = 0;     //乱数上限値
+	public  static String   pElDiv      = null;  //除数
+	public  static int      pElMatches  = 0;     //試合数
+	public  static long     pMpMaxValue = 0L;    //算出最大値
+	public  static double   pMpLimit    = 0;     //範囲上限値
+	public  static String   pDboConURL  = null;  //DB接続URL
+
 	private static final String cPropDir  = "C:\\dev\\Git\\git\\genta\\dev01\\WebContent\\properties\\";
 	private static final String cPropFile = "DefaultValue.properties";
-/*	private static Properties bProp;
-	public static String bGetPropValue(String key) {
-		try {
-			if(bProp == null) bProp = new Properties();
-			bProp.load(new FileInputStream(cPropDir + cPropFile));
-			String value = bProp.getProperty(key);
-			if(value == null) { bPutError(key + " : NULL"); return ""; }
-			bPutLog(key + " : " + value);
-			return value;
-		} catch (Throwable e) {
-			bPutError(key + " : " + e); return "";
-		}
-	}*/
-
-	//◆プロパティ値取得(一括)
-	private static boolean pBsDebug = false;  //Debugモード
-	public  static int     pCbCount = 0;      //リスト件数
-	public  static int     pElCount = 0;      //口数
-	public  static int     pElBound = 0;      //乱数上限値
-	public  static String  pElDiv = null;     //除数
-	public  static int     pElMatches = 0;    //試合数
-	public  static long    pMpMaxValue = 0L;  //算出最大値
-	public  static double  pMpLimit = 0;      //範囲上限値
-	public  static String  pDboConURL = null; //DB接続URL
-	private static Map<String, String> pMap = null;
-	private static final String[] cKeys = new String[]{
-			"BS_DebugMode","CB_ListCount","EL_ShareCount","EL_Bound","EL_Divisors","EL_Matches","MP_MaxValue","MP_Limit","DBO_ConnectionURL"};
+	private static final String[] cKeysBS  = new String[]{"BS_DebugMode", "BS_Actions", "BS_Acros"};
+	private static final String[] cKeysCB  = new String[]{"CB_ListCount"};
+	private static final String[] cKeysEL  = new String[]{"EL_ShareCount", "EL_Bound", "EL_Divisors","EL_Matches"};
+	private static final String[] cKeysMP  = new String[]{"MP_MaxValue", "MP_Limit"};
+	private static final String[] cKeysDBO = new String[]{"DBO_ConnectionURL"}; //★
+	
 	public static void bGetPropMap() {
 		try {
 			Properties prop = new Properties();
 			prop.load(new FileInputStream(cPropDir + cPropFile));
 
-			pMap = new HashMap<>();
-			for(int i=0; i<cKeys.length; i++) {
-				String value = null;
-				try {
-					value = prop.getProperty(cKeys[i]);
-				} catch (Throwable e) {
-					bPutError(cKeys[i] + " : " + e);
-				}
-				pMap.put(cKeys[i], value);
-			}
-			bPutLog(pMap);
+			Map<String, String> pMap = new HashMap<>();
+			List<String[]> keylist = Arrays.asList(cKeysBS, cKeysCB, cKeysEL, cKeysMP, cKeysDBO);
 
-			pBsDebug    = pMap.get(cKeys[0]).equals("1"); //取得したプロパティを展開
-			pCbCount    = Base.bParseInt( pMap.get(cKeys[1]), 0 );
-			pElCount    = Base.bParseInt( pMap.get(cKeys[2]), 0 );
-			pElBound    = Base.bParseInt( pMap.get(cKeys[3]), 0 );
-			pElDiv      = pMap.get(cKeys[4]);
-			pElMatches  = Base.bParseInt( pMap.get(cKeys[5]), 0 );
-			pMpMaxValue = bParseLong(pMap.get(cKeys[6]),0L);
-			pMpLimit    = bParseDouble(pMap.get(cKeys[7]),0.0);
-			pDboConURL  = pMap.get(cKeys[8]);
+			for(int i=0; i<keylist.size(); i++) {
+
+				String[] keys = keylist.get(i);
+				Map<String, String> logMap = new HashMap<>();
+
+				for(int j=0; j<keys.length; j++) {
+					String value = null;
+					try {
+						value = prop.getProperty(keys[j]);
+					} catch (Throwable e) {
+						bPutError(keys[j] + " : " + e);
+					}
+					pMap.put(keys[j], value);
+					logMap.put(keys[j], value);
+				}
+				bPutLog(logMap);
+			}
+			pBsDebug    = pMap.get(cKeysBS[0]).equals("1"); //取得したプロパティを展開
+			setActMap(pMap.get(cKeysBS[1]).split(","));  //許容Action
+			setAcroMap(pMap.get(cKeysBS[2]).split(",")); //略称
+			pCbCount    = Base.bParseInt( pMap.get(cKeysCB[0]), 0 );
+			pElCount    = Base.bParseInt( pMap.get(cKeysEL[0]), 0 );
+			pElBound    = Base.bParseInt( pMap.get(cKeysEL[1]), 0 );
+			pElDiv      = pMap.get(cKeysEL[2]);
+			pElMatches  = Base.bParseInt( pMap.get(cKeysEL[3]), 0 );
+			pMpMaxValue = bParseLong(pMap.get(cKeysMP[0]),0L);
+			pMpLimit    = bParseDouble(pMap.get(cKeysMP[1]),0.0);
+			pDboConURL  = pMap.get(cKeysDBO[0]);
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
-	}
-
-	//◆BaseMsgの追記型設定
-	public static <T> void bSetBaseMsg(HttpServletRequest req, T msg) {
-		Object curMsg = req.getAttribute(cAttrBaseMsg);
-		req.setAttribute(cAttrBaseMsg, (curMsg != null) ? curMsg + " / " + msg : msg);
 	}
 }

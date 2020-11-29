@@ -108,7 +108,8 @@ function bExec(id, action, method, cmd){
 
 //サーブレットパスのリストを返却
 function bGetPages(flg){
-	var names = new Array("/CheckBox", "/StringConvert", "/ExpectLottery", "/MathProcess", "/DbOperation");
+	var names = new Array(
+		"/CheckBox", "/StringConvert", "/ExpectLottery", "/MathProcess", "/DbOperation", "/AtndMgt");
 	if(flg){ names.unshift("TopMenu"); }
 	return names;
 }

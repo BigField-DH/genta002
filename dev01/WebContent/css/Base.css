@@ -1,17 +1,22 @@
 @charset "utf-8";
-hr { border:none; border-top:solid 1px #A0A0A0; }
+
+/* ◆ Common ◆ */
+input[type="button"]       { color:#0000F0; background:#FFFFC0; border-width:3px; font-size:medium; padding:2px 11px; }
+input[type="button"]:hover { color:#C00000; font-style:italic; }
 input[type="text"] { border:solid 1px; padding: 1px 3px; }
+hr { border:none; border-top:solid 1px #A0A0A0; }
 table { border-collapse:collapse; border:solid 0px; padding:0px; }
 td { border:solid 0px; padding:0px; }
 th { border:solid 1px #A0A0A0; padding:0px 5px; }
 A       { color:#0000F0; border:solid 1px #0000F0; background:#FFFFC0; padding:0px 5px; text-decoration:none; }
 A:hover { color:#C00000; border:solid 1px #C00000; font-style:italic; }
-
-/* ◆ Common ◆ */
-.baseStyle { margin:5px; color:#600000; background:#FFFBF0; width:960px; display:none; }
+.baseBody { margin:5px; color:#600000; background:#FFFBF0; width:960px; display:none; }
+.baseForm { max-height:800px; overflow-y:auto; }
 .none, #hr { display:none; }
-input[type="button"]       { color:#000060; background:#FFFF80; border-width:3px; font-size:medium; padding:2px 11px; }
-input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:italic; }
+
+/* ◆ AttendanceManagement  ◆ */
+
+
 
 /* ◆ Header ◆ */
 #header {
@@ -22,7 +27,6 @@ input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:itali
 #header #hdrMsg { color:#FF0000; vertical-align:bottom; display:table-cell; }
 
 /* ◆ Main ◆ */
-#main { max-height:740px; overflow-y:auto; }
 
 /* ◆ Footer ◆ */
 #footer { border:solid 2px #A0A0A0; border-left:none; border-right:none; background:#C0FFFF; padding:10px 0px; }
@@ -41,7 +45,7 @@ input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:itali
 .cbCond div { vertical-align:bottom; display:table-cell; }
 .cbCond input[type="text"], .cbCond A { margin:0px 0px 0px 10px; }
 .cbCond input[type="checkbox"] { margin:0px 3px 0px 10px; }
-#cbTable { margin:0px 0px 0px 10px; max-height:570px; width:180px; overflow-y:auto; display:none; }
+#cbTable { margin:0px 0px 0px 10px; max-height:640px; width:180px; overflow-y:auto; display:none; }
 #cbTable tr { text-align:center; }
 #cbTable [id^="cbTr"], #cbArea { display:none; }
 #cbTable .col { width:52px; border:solid 1px #A0A0A0; }
@@ -64,8 +68,8 @@ input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:itali
 .expCond input[type="text"] { margin:0px 0px 0px 10px; }
 .expCond input[type="radio"]    { margin:0px 3px 0px 10px; }
 .expCond input[type="checkbox"] { margin:0px 3px 0px 10px; }
-#resultToto { max-height:580px; max-width:920px; overflow-y:auto; display:none; }
-#resultLoto { max-height:580px; max-width:770px; overflow-y:auto; display:none; }
+#resultToto { max-height:660px; max-width:920px; overflow-y:auto; display:none; }
+#resultLoto { max-height:660px; max-width:770px; overflow-y:auto; display:none; }
 #resultToto table    { margin:0px 0px 10px 10px; }
 #resultToto table tr, #resultLoto table tr { text-align:center; }
 #resultToto table td { width:25px; border:solid 1px #A0A0A0; }
@@ -78,8 +82,8 @@ input[type="button"]:hover { color:#0000A0; background:#FFD0D0; font-style:itali
 .mpCond input { margin:0px 0px 0px 10px; }
 .mpCond p { text-align:right; margin:10px 0px 0px 0px; }
 #mpIsPrime, #mpDivisors, #mpPrimes { margin:0px 0px 0px 10px; display:none; }
-.divisors { max-height:550px; max-width:920px; overflow-y:auto; display:block; }
-.primes   { max-height:570px; max-width:955px; overflow-y:auto; display:block; }
+.divisors { max-height:600px; max-width:920px; overflow-y:auto; display:block; }
+.primes   { max-height:640px; max-width:955px; overflow-y:auto; display:block; }
 .divisors td, .primes td { border:solid 1px #A0A0A0; padding:0px 4px; text-align:right; }
 
 /* ◆ DbOperation ◆ */

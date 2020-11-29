@@ -24,6 +24,8 @@ public final class Const {
 	public static final String prmCondCol2t = "condCol2t";
 	public static final String prmCondCol3f = "condCol3f";
 	public static final String prmCondCol3t = "condCol3t";
+	public static final String prmCondYear  = "condYear";
+	public static final String prmCondMonth = "condMonth";
 	public static final String prmInsCol1   = "insCol1";
 	public static final String prmInsCol2   = "insCol2";
 	public static final String prmInsCol3   = "insCol3";
@@ -50,6 +52,10 @@ public final class Const {
 	public static final String rdRange  = "range";
 	public static final String rdToto   = "Toto";
 	public static final String rdLoto   = "Loto";
+	public static final int rd0Atnd     = 0; //勤怠
+	public static final int rd1Contr    = 1; //契約
+	public static final int rd2Recess   = 2; //休憩
+	public static final int rd3Holiday  = 3; //休日
 
 	public static final String cbSim   = "SIM";   //◆prmItemCB Variation
 	public static final String cbCheck = "CHECK";
@@ -65,6 +71,7 @@ public final class Const {
 	public String getCntxtEL()  { return cntxt + Base.srvltEL; }
 	public String getCntxtMP()  { return cntxt + Base.srvltMP; }
 	public String getCntxtDBO() { return cntxt + Base.srvltDBO; }
+	public String getCntxtAM()  { return cntxt + Base.srvltAM; }
 	public String getCntxtDmy() { return cntxt + Base.srvltDmy; }
 
 	public String getCntxtJsBase()   { return cntxt + "/js/Base.js"; }
@@ -86,6 +93,8 @@ public final class Const {
 	public String getPrmCondCol2t() { return prmCondCol2t; }
 	public String getPrmCondCol3f() { return prmCondCol3f; }
 	public String getPrmCondCol3t() { return prmCondCol3t; }
+	public String getPrmCondYear()  { return prmCondYear; }
+	public String getPrmCondMonth() { return prmCondMonth; }
 	public String getPrmInsCol1()   { return prmInsCol1; }
 	public String getPrmInsCol2()   { return prmInsCol2; }
 	public String getPrmInsCol3()   { return prmInsCol3; }
@@ -110,6 +119,10 @@ public final class Const {
 	public String getRdRange()  { return rdRange; }
 	public String getRdToto()   { return rdToto; }
 	public String getRdLoto()   { return rdLoto; }
+	public int getRd0Atnd()     { return rd0Atnd; }
+	public int getRd1Contr()    { return rd1Contr; }
+	public int getRd2Recess()   { return rd2Recess; }
+	public int getRd3Holiday()  { return rd3Holiday; }
 
 	public String getCbSim()   { return cbSim; }
 	public String getCbCheck() { return cbCheck; }

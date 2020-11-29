@@ -31,7 +31,12 @@
 　<a href="javascript: bExec('${acro}', '${C.cntxtDBO}', 'GET',  ''   )">GET</a>
 <hr>
 
-<b id="srvltTtl6">◆ 異常系 ◆</b><br>
+<b id="srvltTtl6">◆</b><br>
+　<a href="javascript: bExec('${acro}', '${C.cntxtAM}', 'POST', 'AM')">Action NG</a>
+　<a href="javascript: bExec('${acro}', '${C.cntxtAM}', 'GET',  ''   )">GET</a>
+<hr>
+
+<b id="srvltTtl7">◆ 異常系 ◆</b><br>
 　<a href="javascript: bExec('${acro}', '/dev01/Empty',  'POST', '')">Not Found</a>
 　<a href="javascript: bExec('${acro}', '${C.cntxtDmy}', 'GET',  '')">RuntimeException</a>
 　<a href="/dev01/jsp/TopMenu.jsp"  >TopMenu.jsp</a>
@@ -39,8 +44,8 @@
 　<a href="/dev01/jsp/CheckBox.jsp" >CheckBox.jsp</a>
 <hr>
 
-<b id="srvltTtl6">◆ Dummy ◆</b><br>
-　<a href="javascript: bExec('${acro}', '${C.cntxtDmy}', 'POST', '')">Dummy</a>
+<b id="srvltTtl8">◆ Dummy ◆</b><br>
+　<a href="javascript: bExec('${acro}', '${C.cntxtDmy}', 'POST', '${C.actShow}')">Dummy</a>
 
 </div>
 
